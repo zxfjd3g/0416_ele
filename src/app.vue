@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ele-header></ele-header>
+    <ele-header :seller="seller"></ele-header>
 
     <div class="tab border-1px">
       <div class="tab-item">
@@ -14,15 +14,21 @@
       </div>
     </div>
 
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 
 <script>
   import axios from 'axios'
   import header from './components/header/header.vue'
-
+  const OK = 0 //代表成功数据的标识
   export default {
+
+    data () {
+      return {
+        seller: {}
+      }
+    },
     
     created () {
       //使用vue-resource发送ajax请求express提供的模拟接口
@@ -32,11 +38,17 @@
           console.log('vue-resource', result)
         })
       // 使用axios发送ajax请求mockjs提供的模拟接口
-      axios.get('/api2/seller')
-        .then(response => {
-          const result = response.data
-          console.log('axios', result)
-        })
+      setTimeout(() => {
+        axios.get('/api2/seller')
+          .then(response => {
+            const result = response.data // {code: 0, data: seller}
+            console.log('axios', result)
+            if(result.code===OK) {
+              this.seller = result.data
+              this.seller.score = 3.5
+            }
+          })
+      }, 1000)
     },
     
     components: {
