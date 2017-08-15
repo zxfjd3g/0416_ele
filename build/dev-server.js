@@ -21,6 +21,38 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+
+/*mock data start*/
+//1. 加载json数据
+const data = require('../src/mock/data.json')
+
+//2. 得到路由器
+const router = express.Router()
+
+// 3. 注册路由
+router.get('/goods', function (req, res) {
+  res.json({
+    code: 0,
+    data: data.goods
+  })
+})
+router.get('/ratings', function (req, res) {
+  res.json({
+    code: 0,
+    data: data.ratings
+  })
+})
+router.get('/seller', function (req, res) {
+  res.json({
+    code: 0,
+    data: data.seller
+  })
+})
+
+//4. 启用路由器
+app.use('/api', router)
+/*mock data end*/
+
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
