@@ -43,6 +43,11 @@
           </li>
         </ul>
       </div>
+      <shopcart :min-price="seller.minPrice"
+                :delivery-price="seller.deliveryPrice"
+                :foods="cartFoods"
+                :update-food-count="updateFoodCount"
+                :clear-cart="clearCart"></shopcart>
     </div>
   </div>
 </template>
@@ -52,8 +57,12 @@
   import BScroll from 'better-scroll'
 
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
+  import shopcart from '../shopcart/shopcart.vue'
 
   export default {
+
+    props: ['seller'],
+
     data () {
       return {
         goods: [],
@@ -141,6 +150,12 @@
             food.count--
           }
         }
+      },
+
+      clearCart () { // 将cartFoods中所有food的count属性值指定为0
+        this.cartFoods.forEach(food => {
+          food.count = 0
+        })
       }
     },
 
@@ -151,11 +166,23 @@
         return tops.findIndex((top, index) =>{
           return scrollY>=top && scrollY<tops[index+1]
         }) // 返回第一个回调函数的结果为true的index值
+      },
+      cartFoods () { // 所有count>0的food的数组计算属性
+        const foods = []
+        this.goods.forEach(good => {
+          good.foods.forEach(food => {
+            if(food.count) {
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
 
     components: {
-      cartcontrol
+      cartcontrol,
+      shopcart
     }
   }
 </script>
