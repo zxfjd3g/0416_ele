@@ -6,7 +6,7 @@
           <!--current-->
           <li class="menu-item" v-for="(good, index) in goods"
               :class="{current:currIndex===index}"
-              @click="clickMenuItem(index)">
+              @click="clickMenuItem(index, $event)">
 
             <span class="text border-1px">
               <span class="icon" v-if="good.type>=0" :class="supportClasses[good.type]"></span>{{good.name}}
@@ -35,7 +35,7 @@
                     <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    cartcontrol组件
+                    <cartcontrol :food="food" :update-food-count="updateFoodCount"></cartcontrol>
                   </div>
                 </div>
               </li>
@@ -50,6 +50,8 @@
 <script>
   import axios from 'axios'
   import BScroll from 'better-scroll'
+
+  import cartcontrol from '../cartcontrol/cartcontrol.vue'
 
   export default {
     data () {
@@ -87,6 +89,7 @@
         })
         // 创建右侧的食物列表Scroll
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          click: true,
           probeType: 3  // 接收scroll事件
         })
 
@@ -112,12 +115,32 @@
         this.tops = tops
       },
 
-      clickMenuItem (index) {
-        console.log('clickMenuItem()')
+      clickMenuItem (index, e) {
+        // 过滤原生事件的回调
+        if(!e._constructed) {
+          return
+        }
+        console.log('clickMenuItem()', e)
         // 得到对应的li
         const li = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')[index]
         // 通过foodsScroll来平滑滚动li处
         this.foodsScroll.scrollToElement(li, 300)
+      },
+
+      updateFoodCount (food, isAdd) {
+        console.log('updateFoodCount()')
+        if(isAdd) {
+          if(food.count) {
+            food.count++
+          } else { // 第一次加
+            // food.count = 1 // 给food对象新增属性, 没有数据绑定, 界面不会更新
+            this.$set(food, 'count', 1)
+          }
+        } else {
+          if(food.count) { // 只有count>=1时才能减
+            food.count--
+          }
+        }
       }
     },
 
@@ -129,6 +152,10 @@
           return scrollY>=top && scrollY<tops[index+1]
         }) // 返回第一个回调函数的结果为true的index值
       }
+    },
+
+    components: {
+      cartcontrol
     }
   }
 </script>
