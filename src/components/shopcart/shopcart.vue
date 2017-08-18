@@ -22,7 +22,8 @@
         <transition v-for="ball in balls"
                     @before-enter="beforeDrop"
                     @enter="dropping"
-                    @after-enter="afterDrop">
+                    @after-enter="afterDrop"
+                    :css="false">
           <div class="ball" v-show="ball.isShow">
             <div class="inner inner-hook"></div>
           </div>
@@ -79,7 +80,8 @@
           {isShow: false},
           {isShow: false},
           {isShow: false}
-        ]
+        ],
+        droppingBalls: [] // 保存所有显示的小球所对应的ball
       }
     },
 
@@ -95,19 +97,60 @@
         if(ball) {
           // 让对应的小球显示
           ball.isShow = true // 后面就会自动调用动画的相关生命周期回调
+          // 保存startEl
+          ball.startEl = startEl
+          // 保存ball
+          this.droppingBalls.push(ball)
         }
       },
 
       // 在显示动画开始之前调用: 指定动画开始时的状态
       beforeDrop (el) { // el是发生动画的小球div
+        console.log('beforeDrop()')
+        const ball = this.droppingBalls.shift() //删除下标的为ball
+        // const ball = this.droppingBalls[0]
+        const startEl = ball.startEl
 
+        // 计算x/y轴的偏移量
+        let offsetY = 0
+        let offsetX = 0
+        const elLeft = 32
+        const elBottom = 22
+        const {left , top} = startEl.getBoundingClientRect()
+        const startElLeft = left
+        const startElTop = top
+        offsetX = startElLeft-elLeft
+        offsetY = -(window.innerHeight-startElTop-elBottom)
+
+        // 瞬间移动到指定的位置
+        el.style.transform = `translate3d(0, ${offsetY}px, 0)`
+        const innerEl = el.children[0]
+        innerEl.style.transform = `translate3d(${offsetX}px, 0, 0)`
+
+        // 保存ball到el
+        el.ball = ball
       },
       // 一开始动画就调用: 指定动画结束时的状态
       dropping (el) {
+        console.log('dropping()')
 
+        // 强制重排重绘制
+        const temp = el.clientHeight
+
+        //异步指定
+        this.$nextTick(() => {
+          el.style.transform = `translate3d(0, 0, 0)`
+          const innerEl = el.children[0]
+          innerEl.style.transform = `translate3d(0, 0, 0)`
+        })
       },
       // 动画结束后调用: 做一些收尾扔工作
       afterDrop (el) {
+        console.log('afterDrop()')
+        // 延迟隐藏ball
+        setTimeout(() => {
+          el.ball.isShow = false
+        }, 400)
 
       }
     },
