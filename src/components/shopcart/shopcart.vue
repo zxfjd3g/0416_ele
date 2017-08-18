@@ -18,7 +18,17 @@
           </div>
         </div>
       </div>
-      <div class="ball-container"></div>
+      <div class="ball-container">
+        <transition v-for="ball in balls"
+                    @before-enter="beforeDrop"
+                    @enter="dropping"
+                    @after-enter="afterDrop">
+          <div class="ball" v-show="ball.isShow">
+            <div class="inner inner-hook"></div>
+          </div>
+        </transition>
+
+      </div>
       <transition name="fold">
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
@@ -61,13 +71,44 @@
 
     data () {
       return {
-        isShow: false
+        isShow: false,
+        balls: [ // 所有濒于状态的数组
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false},
+          {isShow: false}
+        ]
       }
     },
 
     methods: {
       toggleFoods () {
         this.isShow = !this.isShow
+      },
+
+      // 找到一个隐藏的小球, 让它显示并开始动画过程
+      startDrop (startEl) {
+        // 在balls中找到一个isShow为false的ball对象
+        const ball = this.balls.find(ball => !ball.isShow)
+        if(ball) {
+          // 让对应的小球显示
+          ball.isShow = true // 后面就会自动调用动画的相关生命周期回调
+        }
+      },
+
+      // 在显示动画开始之前调用: 指定动画开始时的状态
+      beforeDrop (el) { // el是发生动画的小球div
+
+      },
+      // 一开始动画就调用: 指定动画结束时的状态
+      dropping (el) {
+
+      },
+      // 动画结束后调用: 做一些收尾扔工作
+      afterDrop (el) {
+
       }
     },
 

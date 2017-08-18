@@ -48,7 +48,8 @@
                 :delivery-price="seller.deliveryPrice"
                 :foods="cartFoods"
                 :update-food-count="updateFoodCount"
-                :clear-cart="clearCart"></shopcart>
+                :clear-cart="clearCart"
+                ref="shopcart"></shopcart>
     </div>
     <food ref="food" :food="selectFood" :update-food-count="updateFoodCount"></food>
   </div>
@@ -107,9 +108,12 @@
         })
 
         // 监视scroll
+        this.enable = true // 标识是否自动接收最新scrollY
         this.foodsScroll.on('scroll', (pos) => {
           console.log(pos.y)
-          this.scrollY = Math.abs(pos.y) // 滑动过程中自动收集scrollY
+          if(this.enable) {
+            this.scrollY = Math.abs(pos.y) // 滑动过程中自动收集scrollY
+          }
         })
       },
 
@@ -136,11 +140,19 @@
         console.log('clickMenuItem()', e)
         // 得到对应的li
         const li = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')[index]
+
+        //移除scroll监听
+        this.enable = false
         // 通过foodsScroll来平滑滚动li处
         this.foodsScroll.scrollToElement(li, 300)
+        // 滚动完成后, 指定scrollY, 添加滚动监听
+        setTimeout(() => {
+          this.enable = true
+          this.scrollY = this.tops[index]
+        }, 300)
       },
 
-      updateFoodCount (food, isAdd) {
+      updateFoodCount (food, isAdd, event) {
         console.log('updateFoodCount()')
         if(isAdd) {
           if(food.count) {
@@ -149,6 +161,9 @@
             // food.count = 1 // 给food对象新增属性, 没有数据绑定, 界面不会更新
             this.$set(food, 'count', 1)
           }
+          // 让一个开始drop动画
+          this.$refs.shopcart.startDrop(event.target)
+
         } else {
           if(food.count) { // 只有count>=1时才能减
             food.count--
