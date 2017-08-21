@@ -35,7 +35,8 @@
         <div class="shopcart-list" v-show="listShow">
           <div class="list-header">
             <h1 class="title">购物车</h1>
-            <span class="empty" @click="clearCart">清空</span>
+            <!--<span class="empty" @click="clearCart">清空</span>-->
+            <mt-button class="empty" type="primary" @click.native="clearCart">清空</mt-button>
           </div>
           <div class="list-content" ref="listContent">
             <ul>
@@ -329,8 +330,6 @@
           color: rgb(7, 17, 27)
         .empty
           float: right
-          font-size: 12px
-          color: rgb(0, 160, 220)
 
       .list-content
         padding: 0 18px

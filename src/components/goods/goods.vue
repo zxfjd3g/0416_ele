@@ -58,6 +58,7 @@
 <script>
   import axios from 'axios'
   import BScroll from 'better-scroll'
+  import { MessageBox,Toast } from 'mint-ui'
 
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
   import shopcart from '../shopcart/shopcart.vue'
@@ -172,9 +173,26 @@
       },
 
       clearCart () { // 将cartFoods中所有food的count属性值指定为0
-        this.cartFoods.forEach(food => {
-          food.count = 0
+
+        MessageBox({
+          title: '提示',
+          message: '确定清空购物车吗?',
+          showCancelButton: true
+        }).then(action => {
+          // alert(action)
+          if(action==='confirm') {
+            this.cartFoods.forEach(food => {
+              food.count = 0
+            })
+            // 显示toast提示
+            Toast({
+              message: '清除成功',
+              position: 'middle',
+              duration: 2000
+            })
+          }
         })
+
       },
 
       showFood (food) {

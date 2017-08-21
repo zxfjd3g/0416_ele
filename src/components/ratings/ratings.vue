@@ -1,64 +1,64 @@
 <template>
   <div class="ratings" ref="ratings">
-    <div class="ratings-content">
-      <div class="overview">
-        <div class="overview-left">
-          <h1 class="score">{{seller.score}}</h1>
-          <div class="title">综合评分</div>
-          <div class="rank">高于周边商家{{seller.rankRate}}%</div>
+    <scroller>
+      <div class="ratings-content">
+        <div class="overview">
+          <div class="overview-left">
+            <h1 class="score">{{seller.score}}</h1>
+            <div class="title">综合评分</div>
+            <div class="rank">高于周边商家{{seller.rankRate}}%</div>
+          </div>
+          <div class="overview-right">
+            <div class="score-wrapper">
+              <span class="title">服务态度</span>
+              <stars :score="seller.serviceScore" :size="36"></stars>
+              <span class="score">{{seller.serviceScore}}</span></div>
+            <div class="score-wrapper">
+              <span class="title">商品评分</span>
+              <stars :score="seller.foodScore" :size="36"></stars>
+              <span class="score">{{seller.foodScore}}</span></div>
+            <div class="delivery-wrapper">
+              <span class="title">送达时间</span>
+              <span class="delivery">{{seller.deliveryTime}}分钟</span></div>
+          </div>
         </div>
-        <div class="overview-right">
-          <div class="score-wrapper">
-            <span class="title">服务态度</span>
-            <stars :score="seller.serviceScore" :size="36"></stars>
-            <span class="score">{{seller.serviceScore}}</span></div>
-          <div class="score-wrapper">
-            <span class="title">商品评分</span>
-            <stars :score="seller.foodScore" :size="36"></stars>
-            <span class="score">{{seller.foodScore}}</span></div>
-          <div class="delivery-wrapper">
-            <span class="title">送达时间</span>
-            <span class="delivery">{{seller.deliveryTime}}分钟</span></div>
+
+        <split></split>
+
+        <ratingselect :desc="{all: '全部', negative: '不满意', positive: '满意'}"
+                      :ratings="ratings"
+                      :only-content="onlyContent"
+                      :select-type="selectType"
+                      @setSelectType="setSelectType"
+                      @toggleOnlyContent="toggleOnlyContent"></ratingselect>
+
+        <div class="rating-wrapper">
+          <ul>
+            <li class="rating-item" v-for="rating in filterRatings">
+              <div class="avatar">
+                <img width="28" height="28" :src="rating.avatar">
+              </div>
+
+              <div class="content">
+                <h1 class="name">{{rating.username}}</h1>
+                <div class="star-wrapper">
+                  <stars :score="rating.score" :size="24"></stars>
+                  <span class="delivery">{{rating.deliveryTime}}</span>
+                </div>
+                <p class="text">{{rating.text}}</p>
+                <div class="recommend">
+                  <span :class="rating.rateType===0 ? 'icon-thumb_up' : 'icon-thumb_down'"></span>
+                  <span class="item" v-for="item in seller.recommend">{{item}}</span>
+                </div>
+                <div class="time">
+                  {{rating.rateTime | date-string}}
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
-
-      <split></split>
-
-      <ratingselect :desc="{all: '全部', negative: '不满意', positive: '满意'}"
-                    :ratings="ratings"
-                    :only-content="onlyContent"
-                    :select-type="selectType"
-                    @setSelectType="setSelectType"
-                    @toggleOnlyContent="toggleOnlyContent"></ratingselect>
-
-      <div class="rating-wrapper">
-        <ul>
-          <li class="rating-item" v-for="rating in filterRatings">
-            <div class="avatar">
-              <img width="28" height="28" :src="rating.avatar">
-            </div>
-
-            <div class="content">
-              <h1 class="name">{{rating.username}}</h1>
-              <div class="star-wrapper">
-                <stars :score="rating.score" :size="24"></stars>
-                <span class="delivery">{{rating.deliveryTime}}</span>
-              </div>
-              <p class="text">{{rating.text}}</p>
-              <div class="recommend">
-                <span :class="rating.rateType===0 ? 'icon-thumb_up' : 'icon-thumb_down'"></span>
-                <span class="item" v-for="item in seller.recommend">{{item}}</span>
-              </div>
-              <div class="time">
-                {{rating.rateTime | date-string}}
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-
+    </scroller>
   </div>
 </template>
 
@@ -90,11 +90,11 @@
           if (result.code === 0) {
             this.ratings = result.data
 
-            this.$nextTick(()=>{
+           /* this.$nextTick(()=>{
               this.scroll = new BScroll(this.$refs.ratings, {
                 click: true
               })
-            })
+            })*/
           }
         })
     },
@@ -125,18 +125,18 @@
         this.selectType = selectType
 
         // 异步刷新scroll
-        this.$nextTick(() => {
+        /*this.$nextTick(() => {
           this.scroll.refresh()
-        })
+        })*/
       },
 
       toggleOnlyContent () {
         this.onlyContent = !this.onlyContent
 
         // 异步刷新scroll
-        this.$nextTick(() => {
+       /* this.$nextTick(() => {
           this.scroll.refresh()
-        })
+        })*/
       }
     },
 
